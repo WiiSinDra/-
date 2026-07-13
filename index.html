@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="車貸試算">
+<meta name="theme-color" content="#171a20">
+<title>26Q3 車貸試算</title>
+<style>
+  :root{
+    --bg:#f2f3f5; --card:#fff; --ink:#171a20; --sub:#5c5e62;
+    --line:#e3e5e8; --accent:#cc0000; --accent2:#171a20; --good:#0a7d33;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC","Noto Sans TC",sans-serif;
+    background:var(--bg); color:var(--ink); font-size:16px; line-height:1.5;
+    padding-bottom:40px;
+  }
+  header{
+    background:var(--accent2); color:#fff; padding:14px 16px calc(14px + env(safe-area-inset-top));
+    padding-top:calc(14px + env(safe-area-inset-top)); position:sticky; top:0; z-index:10;
+  }
+  header h1{margin:0; font-size:18px; font-weight:700; letter-spacing:1px}
+  header .sub{font-size:12px; opacity:.7; margin-top:2px}
+  .tabs{display:flex; gap:6px; padding:10px 12px 0; background:var(--accent2); overflow-x:auto}
+  .tab{
+    flex:0 0 auto; padding:9px 16px; border:none; border-radius:10px 10px 0 0;
+    background:#2b2f36; color:#c9ccd1; font-size:15px; font-weight:600; font-family:inherit;
+  }
+  .tab.active{background:var(--bg); color:var(--ink)}
+  main{padding:14px 12px}
+  .card{background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .card h2{margin:0 0 4px; font-size:16px}
+  .card .note{color:var(--sub); font-size:12px; margin:0 0 12px}
+  .field{margin-bottom:13px}
+  .field label{display:block; font-size:13px; color:var(--sub); margin-bottom:5px; font-weight:600}
+  .field input, .field select{
+    width:100%; padding:12px 12px; font-size:17px; font-family:inherit;
+    border:1.5px solid var(--line); border-radius:10px; background:#fff; color:var(--ink);
+    appearance:none; -webkit-appearance:none;
+  }
+  .field input:focus, .field select:focus{outline:none; border-color:var(--accent2)}
+  .field select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%235c5e62' stroke-width='2'/></svg>");
+    background-repeat:no-repeat; background-position:right 14px center; padding-right:34px}
+  .row2{display:flex; gap:10px}
+  .row2 .field{flex:1}
+  .rate-badge{display:inline-block; background:#e6f4ea; color:var(--good); font-weight:700;
+    padding:2px 10px; border-radius:20px; font-size:14px}
+  .results{background:var(--card); border-radius:var(--radius); overflow:hidden;
+    box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .r-hero{background:linear-gradient(135deg,#171a20,#2b2f36); color:#fff; padding:18px 16px; text-align:center}
+  .r-hero .lbl{font-size:13px; opacity:.75}
+  .r-hero .val{font-size:34px; font-weight:800; margin-top:2px; letter-spacing:.5px}
+  .r-hero .unit{font-size:15px; font-weight:600; opacity:.8}
+  .r-list{padding:6px 16px 14px}
+  .r-item{display:flex; justify-content:space-between; align-items:baseline;
+    padding:11px 0; border-bottom:1px solid var(--line)}
+  .r-item:last-child{border-bottom:none}
+  .r-item .k{color:var(--sub); font-size:14px}
+  .r-item .v{font-size:18px; font-weight:700}
+  .r-item.save .v{color:var(--good)}
+  .foot{color:var(--sub); font-size:11px; text-align:center; padding:6px 20px 0; line-height:1.6}
+  .page{display:none}
+  .page.active{display:block}
+  .shotwrap{padding:2px 12px 30px}
+  .shotbtn{width:100%; padding:15px; font-size:17px; font-weight:700; font-family:inherit;
+    color:#fff; background:var(--accent); border:none; border-radius:12px; box-shadow:0 2px 6px rgba(204,0,0,.25)}
+  .shotbtn:active{opacity:.85}
+  /* 保密提醒條（僅網頁；分享的 PNG 另外畫、不會帶到） */
+  .notice{background:#fdecea; color:#b3261e; font-size:12.5px; font-weight:700;
+    text-align:center; padding:9px 14px; line-height:1.45; letter-spacing:.3px;
+    border-bottom:1px solid #f5c6cb}
+  /* 使用人浮水印層（fixed 蓋滿視窗、不擋操作；不進分享圖） */
+  #wm{position:fixed; inset:0; z-index:60; pointer-events:none; background-repeat:repeat}
+  /* 進入前署名閘門（未填完不能用計算機） */
+  #gate{position:fixed; inset:0; z-index:200; background:rgba(23,26,32,.94);
+    display:flex; align-items:center; justify-content:center; padding:24px}
+  #gate .box{background:#fff; border-radius:16px; padding:22px 20px; width:100%; max-width:380px;
+    box-shadow:0 8px 30px rgba(0,0,0,.35)}
+  #gate h3{margin:0 0 6px; font-size:18px}
+  #gate .gnote{color:var(--sub); font-size:13px; margin:0 0 16px; line-height:1.55}
+  #gate .gbtn{width:100%; padding:14px; font-size:17px; font-weight:700; font-family:inherit;
+    color:#fff; background:var(--accent2); border:none; border-radius:12px; margin-top:8px}
+  #gate .gbtn:disabled{background:#c7c9cd}
+</style>
+</head>
+<body>
+<div id="wm"></div>
+<div id="gate">
+  <div class="box">
+    <h3>請先署名再使用</h3>
+    <p class="gnote">請填寫你的姓名與電話（僅存在本機、設定一次即可）。此姓名會作為網頁浮水印，用於防止外流追溯。</p>
+    <div class="field"><label>業務姓名</label><input id="gate_name" placeholder="你的姓名"></div>
+    <div class="field"><label>聯絡電話</label><input id="gate_phone" inputmode="tel" placeholder="09xx-xxxxxx"></div>
+    <button id="gate_ok" class="gbtn" disabled>開始使用</button>
+  </div>
+</div>
+<div class="notice">🔒 本網址請勿外流，僅許可分享圖片給客戶</div>
+<header>
+  <h1>26Q3 車貸試算</h1>
+  <div class="sub">Tesla Felis · 手機版</div>
+</header>
+<div class="tabs" id="tabs">
+  <button class="tab active" data-p="new">低利車貸</button>
+  <button class="tab" data-p="g">一般車貸</button>
+  <button class="tab" data-p="loan">玉山信貸</button>
+  <button class="tab" data-p="y47">元大47+1</button>
+  <button class="tab" data-p="y99">元大低付</button>
+  <button class="tab" data-p="t99">台新低付</button>
+  <button class="tab" data-p="used">二手車貸</button>
+</div>
+
+<main>
+  <!-- ===== 新車 (快速計算機) ===== -->
+  <section class="page active" id="page-new">
+    <div class="card">
+      <h2>長期持有方案</h2>
+      <p class="note">Tesla 官方車貸．本金分攤（利息預收於頭期）</p>
+      <div class="field">
+        <label>車款總價（元）</label>
+        <input type="number" inputmode="numeric" id="n_price" value="1749900">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>自備成數</label>
+          <select id="n_down">
+            <option value="0.1">10%</option>
+            <option value="0.2" selected>20%</option>
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>貸款期數</label>
+          <select id="n_term">
+            <option value="36">36 期</option>
+            <option value="48">48 期</option>
+            <option value="60">60 期</option>
+            <option value="72">72 期</option>
+            <option value="84" selected>84 期</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>方案</label>
+          <select id="n_bank">
+            <option value="yuanta" selected>元大車貸專案</option>
+            <option value="taishin">台新車貸專案</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>客戶別</label>
+          <select id="n_cust">
+            <option value="normal" selected>一般客戶</option>
+            <option value="corp">企業客戶</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="n_out"></div>
+    <p class="foot">實際核貸與還款以銀行最終審核為主</p>
+  </section>
+
+  <!-- ===== 一般車貸 (本利均攤，同信貸算法) ===== -->
+  <section class="page" id="page-g">
+    <div class="card">
+      <h2>一般車貸方案</h2>
+      <p class="note">一般車貸．本利均攤（利息平均攤入月付）</p>
+      <div class="field">
+        <label>車款總價（元）</label>
+        <input type="number" inputmode="numeric" id="g_price" value="1749900">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>自備成數</label>
+          <select id="g_down">
+            <option value="0.1">10%</option>
+            <option value="0.2" selected>20%</option>
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>貸款期數</label>
+          <select id="g_term">
+            <option value="36">36 期</option>
+            <option value="48">48 期</option>
+            <option value="60">60 期</option>
+            <option value="72">72 期</option>
+            <option value="84" selected>84 期</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>方案</label>
+          <select id="g_bank">
+            <option value="yuanta" selected>元大車貸專案</option>
+            <option value="taishin">台新車貸專案</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>客戶別</label>
+          <select id="g_cust">
+            <option value="normal" selected>一般客戶</option>
+            <option value="corp">企業客戶</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="g_out"></div>
+    <p class="foot">實際核貸與還款以銀行最終審核為主</p>
+  </section>
+
+  <!-- ===== 二手 ===== -->
+  <section class="page" id="page-used">
+    <div class="card">
+      <h2>二手車貸專案</h2>
+      <p class="note">中古車貸．本金分攤（利息預收於頭期）</p>
+      <div class="field">
+        <label>車款總價（元）</label>
+        <input type="number" inputmode="numeric" id="u_price" value="1541000">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>自備成數</label>
+          <select id="u_down">
+            <option value="0.1" selected>10%</option>
+            <option value="0.2">20%</option>
+            <option value="0.3">30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>貸款期數</label>
+          <select id="u_term">
+            <option value="36">36 期</option>
+            <option value="48">48 期</option>
+            <option value="60">60 期</option>
+            <option value="72">72 期</option>
+            <option value="84" selected>84 期</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>方案</label>
+        <select id="u_bank">
+          <option value="yuanta" selected>元大車貸專案</option>
+          <option value="taishin">台新車貸專案</option>
+        </select>
+      </div>
+    </div>
+    <div class="results" id="u_out"></div>
+    <p class="foot">實際核貸與還款以銀行最終審核為主</p>
+  </section>
+
+  <!-- ===== 玉山信貸 ===== -->
+  <section class="page" id="page-loan">
+    <div class="card">
+      <h2>玉山合作信貸方案</h2>
+      <p class="note">個人信貸．本利均攤（利息平均攤入月付）</p>
+      <div class="field">
+        <label>車款總價（元）</label>
+        <input type="number" inputmode="numeric" id="l_price" value="1749900">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>自備成數</label>
+          <select id="l_down">
+            <option value="0">0%</option>
+            <option value="0.1">10%</option>
+            <option value="0.2">20%</option>
+            <option value="0.3" selected>30%</option>
+            <option value="0.4">40%</option>
+            <option value="0.5">50%</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>貸款期數</label>
+          <select id="l_term">
+            <option value="24">24 期</option>
+            <option value="36">36 期</option>
+            <option value="48">48 期</option>
+            <option value="60">60 期</option>
+            <option value="72">72 期</option>
+            <option value="84">84 期</option>
+            <option value="96">96 期</option>
+            <option value="108">108 期</option>
+            <option value="120" selected>120 期</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>優惠利率</label>
+        <select id="l_rate">
+          <option value="0.024">2.40%</option>
+          <option value="0.025" selected>2.50%</option>
+        </select>
+      </div>
+    </div>
+    <div class="results" id="l_out"></div>
+    <p class="foot">實際核貸與還款以銀行最終審核為主</p>
+  </section>
+
+  <!-- ===== 元大 47+1 ===== -->
+  <section class="page" id="page-y47">
+    <div class="card">
+      <h2>元大 26Q3 47+1 方案</h2>
+      <p class="note">前 47 期低月付 ＋ 第 48 期尾款．依車型查表</p>
+      <div class="row2">
+        <div class="field"><label>車款</label>
+          <select id="y47_model"><option>Model3</option><option>ModelY</option></select></div>
+        <div class="field"><label>版本</label><select id="y47_ver"></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>軟體</label>
+          <select id="y47_sw"><option>AP</option><option>EAP</option><option selected>FSD</option></select></div>
+        <div class="field"><label>其他選配（元）</label>
+          <input type="number" inputmode="numeric" id="y47_opt" value="0"></div>
+      </div>
+    </div>
+    <div class="results" id="y47_out"></div>
+    <p class="foot">車價／頭期已含其他選配；實際核貸以銀行審核為主</p>
+  </section>
+
+  <!-- ===== 元大低首付 9999 ===== -->
+  <section class="page" id="page-y99">
+    <div class="card">
+      <h2>元大 26Q3 低首付 9999 方案</h2>
+      <p class="note">前 24 期月繳 9,999 ＋ 24 期後月繳．依車型查表</p>
+      <div class="row2">
+        <div class="field"><label>車款</label>
+          <select id="y99_model"><option>Model3</option><option>ModelY</option></select></div>
+        <div class="field"><label>版本</label><select id="y99_ver"></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>軟體</label>
+          <select id="y99_sw"><option>AP</option><option selected>EAP</option><option>FSD</option></select></div>
+        <div class="field"><label>期數</label>
+          <select id="y99_term"><option value="72">72 期</option><option value="84" selected>84 期</option></select></div>
+      </div>
+      <div class="field"><label>其他選配（元）</label>
+        <input type="number" inputmode="numeric" id="y99_opt" value="0"></div>
+    </div>
+    <div class="results" id="y99_out"></div>
+    <p class="foot">車價／頭期已含其他選配；實際核貸以銀行審核為主</p>
+  </section>
+
+  <!-- ===== 台新低首付 9999 ===== -->
+  <section class="page" id="page-t99">
+    <div class="card">
+      <h2>台新 26Q3 低首付 9999 方案</h2>
+      <p class="note">前 12 期月繳 9,999 ＋ 第 13 期起本利攤還．利率 2.98%</p>
+      <div class="field">
+        <label>車款總價（元）</label>
+        <input type="number" inputmode="numeric" id="t_price" value="2499900">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>頭款（最低 99,999）</label>
+          <input type="number" inputmode="numeric" id="t_down" value="99999">
+        </div>
+        <div class="field">
+          <label>貸款期數</label>
+          <select id="t_term">
+            <option value="60">60 期</option>
+            <option value="72">72 期</option>
+            <option value="84" selected>84 期</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="results" id="t_out"></div>
+    <p class="foot">第 13 期起月付為估算（依實際撥款／繳款日期日計息，實際以銀行核定為準）</p>
+  </section>
+</main>
+
+<div class="shotwrap">
+  <button id="shotBtn" class="shotbtn">📷 存成圖片 · 傳給客戶</button>
+</div>
+
+<script>
+// ---------- 計算引擎（對應 Excel「基本資料」sheet3，已驗證到元一致）----------
+// 本金分攤：月付=貸款/期數（純本金），利息預收進頭期款（新車/二手/M3）
+function calcBenjin(P, d, annualRate, n){
+  const down = P*d;                    // 自備款
+  const L = P*(1-d);                   // 貸款金額
+  const r = annualRate/12;             // 月利率
+  const pw = Math.pow(1+r, n);
+  const monthly = L/n;                 // 月付（本金分攤）
+  const downTotal = down + ( (L/n)/(r/(pw-1))/pw - L ) * (-1); // 頭期款(含總利息)
+  const interest = downTotal - down;   // 總利息
+  return {down, L, monthly, downTotal, interest};
+}
+// 本利均攤：標準年金月付（玉山信貸）
+function calcBenli(P, d, annualRate, n){
+  const down = P*d, L = P*(1-d), r = annualRate/12, pw = Math.pow(1+r, n);
+  const monthly = L*pw*r/(pw-1);
+  return {down, L, monthly, downTotal:down, interest: monthly*n - L};
+}
+// 官網利率下的總利息（年金法）→ 用來算「省多少」
+function officialInterest(L, annualG, n){
+  const gm = annualG/12, pw = Math.pow(1+gm, n);
+  return L*pw*gm/(pw-1)*n - L;
+}
+const nf = new Intl.NumberFormat('zh-TW',{maximumFractionDigits:0});
+function money(x){ return 'NT$ ' + nf.format(Math.round(x)); }
+function pct(x){ return (x*100).toFixed(2) + '%'; }
+
+function renderResult(el, {rate, monthly, downTotal, interest, save, saveLabel, downLabel}){
+  el.innerHTML =
+    '<div class="r-hero"><div class="lbl">每月月付</div>'+
+    '<div class="val">'+nf.format(Math.round(monthly))+' <span class="unit">元 / 月</span></div></div>'+
+    '<div class="r-list">'+
+      '<div class="r-item"><span class="k">優惠利率</span><span class="v"><span class="rate-badge">'+pct(rate)+'</span></span></div>'+
+      '<div class="r-item"><span class="k">'+(downLabel||'頭期款（含總利息）')+'</span><span class="v">'+money(downTotal)+'</span></div>'+
+      '<div class="r-item"><span class="k">貸款總利息</span><span class="v">'+money(interest)+'</span></div>'+
+      '<div class="r-item save"><span class="k">'+saveLabel+'</span><span class="v">省 '+money(save)+'</span></div>'+
+    '</div>';
+}
+
+// ---------- 新車 ----------
+function calcNew(){
+  const P = +document.getElementById('n_price').value || 0;
+  const d = +document.getElementById('n_down').value;
+  const n = +document.getElementById('n_term').value;
+  const bank = document.getElementById('n_bank').value;
+  const cust = document.getElementById('n_cust').value;
+  let rate;
+  if(cust==='corp') rate = 0.0208;              // 企業客戶（不分銀行）
+  else rate = (bank==='taishin') ? 0.0218 : 0.0213; // 一般：台新2.18% / 元大2.13%
+  const g = 0.032;                               // 官網利率
+  const res = calcBenjin(P, d, rate, n);
+  const save = officialInterest(res.L, g, n) - res.interest;
+  renderResult(document.getElementById('n_out'),
+    {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
+     save, saveLabel:'比官網利率('+pct(g)+')省'});
+}
+// ---------- 一般車貸（本利均攤，同信貸算法）----------
+function calcGen(){
+  const P = +document.getElementById('g_price').value || 0;
+  const d = +document.getElementById('g_down').value;
+  const n = +document.getElementById('g_term').value;
+  const bank = document.getElementById('g_bank').value;
+  const cust = document.getElementById('g_cust').value;
+  let rate;
+  if(cust==='corp') rate = 0.0285;                       // 企業客戶（不分銀行）
+  else rate = (bank==='taishin') ? 0.0298 : 0.0293;      // 一般：台新2.98% / 元大2.93%
+  const g = 0.032;                                       // 官網利率
+  const res = calcBenli(P, d, rate, n);                  // 本利均攤（同信貸）
+  const save = officialInterest(res.L, g, n) - res.interest;
+  renderResult(document.getElementById('g_out'),
+    {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
+     save, saveLabel:'比官網利率('+pct(g)+')省', downLabel:'頭期款（自備款）'});
+}
+// ---------- 二手 ----------
+function calcUsed(){
+  const P = +document.getElementById('u_price').value || 0;
+  const d = +document.getElementById('u_down').value;
+  const n = +document.getElementById('u_term').value;
+  const bank = document.getElementById('u_bank').value;
+  const rate = (bank==='taishin') ? 0.029 : 0.0265;   // 本季優惠：台新2.9% / 元大2.65%
+  const g    = (bank==='taishin') ? 0.033 : 0.0313;   // 原始利率：台新3.3% / 元大3.13%
+  const res = calcBenjin(P, d, rate, n);
+  const save = officialInterest(res.L, g, n) - res.interest;
+  renderResult(document.getElementById('u_out'),
+    {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
+     save, saveLabel:'比原始利率('+pct(g)+')省'});
+}
+
+// ---------- 玉山信貸（本利均攤）----------
+function calcLoan(){
+  const P = +document.getElementById('l_price').value || 0;
+  const d = +document.getElementById('l_down').value;
+  const n = +document.getElementById('l_term').value;
+  const rate = +document.getElementById('l_rate').value;   // 優惠利率 2.4% / 2.5%
+  const g = 0.032;                                          // 原始利率(官網比較)
+  const res = calcBenli(P, d, rate, n);
+  const save = officialInterest(res.L, g, n) - res.interest;
+  renderResult(document.getElementById('l_out'),
+    {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
+     save, saveLabel:'比原始利率('+pct(g)+')省', downLabel:'頭期款（自備款）'});
+}
+
+// ---------- 查表型方案（元大47+1 / 元大低首付）----------
+// 元大47+1: [車款,版本,軟體,車價,頭期,貸款,成數,前47期,第48期]
+const DATA_Y47 = [
+  ["Model3","LR","AP",1749900,269900,1480000,0.846,15900,874539],
+  ["Model3","LR","EAP",1860900,280900,1580000,0.849,17040,930350],
+  ["Model3","LR","FSD",1971900,301900,1670000,0.847,17970,985374],
+  ["Model3","P","AP",2337900,357900,1980000,0.847,21300,1168575],
+  ["Model3","P","EAP",2448900,368900,2080000,0.849,22440,1224386],
+  ["Model3","P","FSD",2559900,389900,2170000,0.848,23370,1279409],
+  ["ModelY","SR","AP",1899900,279900,1620000,0.853,17560,949479],
+  ["ModelY","SR","EAP",2010900,310900,1700000,0.845,18250,1005213],
+  ["ModelY","SR","FSD",2121900,321900,1800000,0.848,19400,1060525],
+  ["ModelY","LR","AP",2299900,349900,1950000,0.848,21000,1149734],
+  ["ModelY","LR","EAP",2410900,360900,2050000,0.85,22150,1205046],
+  ["ModelY","LR","FSD",2521900,371900,2150000,0.853,23290,1260857],
+  ["ModelY","P","AP",2499900,379900,2120000,0.848,22840,1249507],
+  ["ModelY","P","EAP",2610900,390900,2220000,0.85,23980,1305318],
+  ["ModelY","P","FSD",2721900,411900,2310000,0.849,24900,1360841]];
+// 元大低首付: [期數,車款,版本,軟體,車價,頭期,貸款,成數,24期後月繳]（前24期固定9999）
+const DATA_Y99 = [
+  [72,"Model3","LR","AP",1749900,349980,1399920,0.8,27410],[72,"Model3","LR","EAP",1860900,372180,1488720,0.8,29495],[72,"Model3","LR","FSD",1971900,394380,1577520,0.8,31580],
+  [72,"Model3","P","AP",2337900,467580,1870320,0.8,38456],[72,"Model3","P","EAP",2448900,489780,1959120,0.8,40541],[72,"Model3","P","FSD",2559900,511980,2047920,0.8,42626],
+  [84,"Model3","LR","AP",1749900,349980,1399920,0.8,22249],[84,"Model3","LR","EAP",1860900,372180,1488720,0.8,23942],[84,"Model3","LR","FSD",1971900,394380,1577520,0.8,25634],
+  [84,"Model3","P","AP",2337900,467580,1870320,0.8,31216],[84,"Model3","P","EAP",2448900,489780,1959120,0.8,32908],[84,"Model3","P","FSD",2559900,511980,2047920,0.8,34601],
+  [72,"ModelY","SR","AP",1899900,379980,1519920,0.8,30228],[72,"ModelY","SR","EAP",2010900,402180,1608720,0.8,32313],[72,"ModelY","SR","FSD",2121900,424380,1697520,0.8,34398],
+  [72,"ModelY","LR","AP",2299900,459980,1839920,0.8,37742],[72,"ModelY","LR","EAP",2410900,482180,1928720,0.8,39827],[72,"ModelY","LR","FSD",2521900,504380,2017520,0.8,41912],
+  [72,"ModelY","P","AP",2499900,499980,1999920,0.8,41499],[72,"ModelY","P","EAP",2610900,522180,2088720,0.8,43584],[72,"ModelY","P","FSD",2721900,544380,2177520,0.8,45670],
+  [84,"ModelY","SR","AP",1899900,379980,1519920,0.8,24536],[84,"ModelY","SR","EAP",2010900,402180,1608720,0.8,26229],[84,"ModelY","SR","FSD",2121900,424380,1697520,0.8,27922],
+  [84,"ModelY","LR","AP",2299900,459980,1839920,0.8,30636],[84,"ModelY","LR","EAP",2410900,482180,1928720,0.8,32329],[84,"ModelY","LR","FSD",2521900,504380,2017520,0.8,34021],
+  [84,"ModelY","P","AP",2499900,499980,1999920,0.8,33686],[84,"ModelY","P","EAP",2610900,522180,2088720,0.8,35379],[84,"ModelY","P","FSD",2721900,544380,2177520,0.8,37071]];
+const VERSIONS = {Model3:["LR","P"], ModelY:["SR","LR","P"]};
+
+function fillVersions(modelSel, verSel){
+  const vs = VERSIONS[modelSel.value] || [];
+  verSel.innerHTML = vs.map(v=>'<option>'+v+'</option>').join('');
+}
+function renderLookup(el, hero, rows){
+  el.innerHTML =
+    '<div class="r-hero"><div class="lbl">'+hero.lbl+'</div>'+
+    '<div class="val">'+hero.val+' <span class="unit">'+hero.unit+'</span></div></div>'+
+    '<div class="r-list">'+
+      rows.map(r=>'<div class="r-item'+(r.save?' save':'')+'"><span class="k">'+r.k+'</span><span class="v">'+r.v+'</span></div>').join('')+
+    '</div>';
+}
+function calcY47(){
+  const m=document.getElementById('y47_model').value, v=document.getElementById('y47_ver').value, s=document.getElementById('y47_sw').value;
+  const opt=+document.getElementById('y47_opt').value||0;
+  const row=DATA_Y47.find(r=>r[0]===m&&r[1]===v&&r[2]===s); if(!row) return;
+  const [,,,price,down,loan,ratio,m47,m48]=row;
+  renderLookup(document.getElementById('y47_out'),
+    {lbl:'前 47 期月付', val:nf.format(m47), unit:'元 / 月'},
+    [{k:'第 48 期尾款',v:money(m48)},
+     {k:'車價（含選配）',v:money(price+opt)},
+     {k:'頭期款（含選配）',v:money(down+opt)},
+     {k:'貸款金額',v:money(loan)},
+     {k:'貸款成數',v:pct(ratio)}]);
+}
+function calcY99(){
+  const m=document.getElementById('y99_model').value, v=document.getElementById('y99_ver').value, s=document.getElementById('y99_sw').value;
+  const term=+document.getElementById('y99_term').value, opt=+document.getElementById('y99_opt').value||0;
+  const row=DATA_Y99.find(r=>r[0]===term&&r[1]===m&&r[2]===v&&r[3]===s); if(!row) return;
+  const [,,,,price,down,loan,ratio,after]=row;
+  renderLookup(document.getElementById('y99_out'),
+    {lbl:'前 24 期月繳', val:'9,999', unit:'元 / 月'},
+    [{k:'24 期後月繳',v:money(after)},
+     {k:'車價（含選配）',v:money(price+opt)},
+     {k:'頭期款（含選配）',v:money(down+opt)},
+     {k:'貸款金額',v:money(loan)},
+     {k:'貸款成數',v:pct(ratio)}]);
+}
+
+// ---------- 台新低首付 9999（前12期9999，之後本利攤還剩餘餘額）----------
+function calcT99(){
+  const P = +document.getElementById('t_price').value || 0;
+  let D = +document.getElementById('t_down').value || 0;
+  if(D < 99999) D = 99999;                       // 頭款最低 99,999
+  const n = +document.getElementById('t_term').value;
+  const r = 0.0298/12;                            // 台新低首付固定年利率 2.98%
+  const L = P - D;                                // 初貸金額
+  let b = L; for(let i=0;i<12;i++){ b = b*(1+r) - 9999; } // 第13期餘額（月複利估算）
+  const pw = Math.pow(1+r, n-12);
+  const after = Math.round(b*r*pw/(pw-1)) + 2;    // 後續月還款（PMT，同 Excel 公式）
+  renderLookup(document.getElementById('t_out'),
+    {lbl:'前 12 期月繳', val:'9,999', unit:'元 / 月'},
+    [{k:'第 13 期起月付（約）',v:money(after)},
+     {k:'初貸金額（車價−頭款）',v:money(L)},
+     {k:'第 13 期餘額（約）',v:money(b)},
+     {k:'頭款',v:money(D)}]);
+}
+
+// ---------- 分頁切換 ----------
+document.getElementById('tabs').addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(!b) return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t===b));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+b.dataset.p).classList.add('active');
+});
+// 綁定即時計算
+['n_price','n_down','n_term','n_bank','n_cust'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calcNew);
+  document.getElementById(id).addEventListener('change', calcNew);
+});
+['g_price','g_down','g_term','g_bank','g_cust'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calcGen);
+  document.getElementById(id).addEventListener('change', calcGen);
+});
+['u_price','u_down','u_term','u_bank'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calcUsed);
+  document.getElementById(id).addEventListener('change', calcUsed);
+});
+['l_price','l_down','l_term','l_rate'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', calcLoan);
+  document.getElementById(id).addEventListener('change', calcLoan);
+});
+// 元大47+1
+const y47m=document.getElementById('y47_model'), y47v=document.getElementById('y47_ver');
+y47m.addEventListener('change', ()=>{ fillVersions(y47m,y47v); y47v.value='LR'; calcY47(); });
+['y47_ver','y47_sw','y47_opt'].forEach(id=>{ const e=document.getElementById(id);
+  e.addEventListener('input',calcY47); e.addEventListener('change',calcY47); });
+// 元大低首付
+const y99m=document.getElementById('y99_model'), y99v=document.getElementById('y99_ver');
+y99m.addEventListener('change', ()=>{ fillVersions(y99m,y99v); calcY99(); });
+['y99_ver','y99_sw','y99_term','y99_opt'].forEach(id=>{ const e=document.getElementById(id);
+  e.addEventListener('input',calcY99); e.addEventListener('change',calcY99); });
+// 台新低首付
+['t_price','t_down','t_term'].forEach(id=>{ const e=document.getElementById(id);
+  e.addEventListener('input',calcT99); e.addEventListener('change',calcT99); });
+// 初始化版本下拉 + 首次計算
+fillVersions(y47m,y47v); y47v.value='LR';
+fillVersions(y99m,y99v); y99v.value='SR'; // ModelY 預設 SR
+document.getElementById('y99_model').value='ModelY'; fillVersions(y99m,y99v); y99v.value='SR';
+calcNew(); calcGen(); calcUsed(); calcLoan(); calcY47(); calcY99(); calcT99();
+
+// ---------- 一鍵存圖 / 分享（畫成報價卡 PNG）----------
+function shot(){
+  const page = document.querySelector('.page.active');
+  const res = page.querySelector('.results');
+  const hero = res && res.querySelector('.r-hero');
+  if(!hero){ alert('請先選好方案／輸入金額'); return; }
+  const title = page.querySelector('h2').textContent.trim();
+  // 試算條件（把上方輸入欄位一起帶進圖）
+  const inputs = [].slice.call(page.querySelectorAll('.card .field')).map(function(f){
+    const lab=f.querySelector('label'), el=f.querySelector('select,input');
+    if(!lab||!el) return null;
+    let v; if(el.tagName==='SELECT'){ v=el.options[el.selectedIndex].text.trim(); }
+    else { v=el.value; if(/^\d+$/.test(v)) v=nf.format(+v); }
+    return {k:lab.textContent.trim(), v:v};
+  }).filter(Boolean);
+  // 自訂署名（存在本機）
+  const nm=(localStorage.getItem('cfg_name')||'').trim(), ph=(localStorage.getItem('cfg_phone')||'').trim();
+  let sig='Tesla'; if(nm) sig='Tesla 業務 '+nm; if(ph) sig+=(nm?'　':' ')+ph;
+  const heroLbl = hero.querySelector('.lbl').textContent.trim();
+  const heroVal = hero.querySelector('.val').textContent.replace(/\s+/g,' ').trim();
+  const items = [].slice.call(res.querySelectorAll('.r-item')).map(function(it){
+    return {k:it.querySelector('.k').textContent.trim(), v:it.querySelector('.v').textContent.trim(),
+            save:it.classList.contains('save')};
+  });
+  const W=820, pad=52, rowH=104, headH=160, heroH=270, footH=150;
+  const condTop=52, condRow=72, condBot=20;
+  const condH = inputs.length ? (condTop + inputs.length*condRow + condBot) : 0;
+  const H = headH + condH + heroH + items.length*rowH + footH;
+  const s = 2;
+  const cv = document.createElement('canvas'); cv.width=W*s; cv.height=H*s;
+  const c = cv.getContext('2d'); c.scale(s,s);
+  const F = '"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif';
+  c.fillStyle='#fff'; c.fillRect(0,0,W,H);
+  // header
+  c.fillStyle='#171a20'; c.fillRect(0,0,W,headH);
+  c.textBaseline='middle'; c.fillStyle='#fff'; c.font='bold 60px '+F; c.fillText(title, pad, 68);
+  c.fillStyle='#9aa0a6'; c.font='26px '+F; c.fillText('26Q3 車貸試算', pad, 116);
+  let y=headH;
+  // 試算條件區
+  if(inputs.length){
+    c.fillStyle='#fafafa'; c.fillRect(0,y,W,condH);
+    c.fillStyle='#9aa0a6'; c.font='24px '+F; c.textBaseline='middle'; c.textAlign='left'; c.fillText('試算條件', pad, y+30);
+    let yy=y+condTop+condRow/2;
+    inputs.forEach(function(it){
+      c.fillStyle='#5c5e62'; c.font='36px '+F; c.textAlign='left'; c.fillText(it.k, pad, yy);
+      c.fillStyle='#171a20'; c.font='bold 38px '+F; c.textAlign='right'; c.fillText(it.v, W-pad, yy);
+      yy+=condRow;
+    });
+    y+=condH;
+  }
+  // hero
+  c.fillStyle='#f4f5f6'; c.fillRect(0,y,W,heroH);
+  c.textAlign='center'; c.fillStyle='#5c5e62'; c.font='34px '+F; c.fillText(heroLbl, W/2, y+80);
+  c.fillStyle='#171a20'; c.font='bold 108px '+F; c.fillText(heroVal, W/2, y+185);
+  c.textAlign='left'; y+=heroH;
+  // rows
+  items.forEach(function(it){
+    c.strokeStyle='#e3e5e8'; c.lineWidth=1; c.beginPath(); c.moveTo(pad,y+rowH); c.lineTo(W-pad,y+rowH); c.stroke();
+    c.fillStyle='#5c5e62'; c.font='36px '+F; c.textBaseline='middle'; c.textAlign='left';
+    c.fillText(it.k, pad, y+rowH/2);
+    c.fillStyle = (it.save || it.k==='優惠利率') ? '#0a7d33' : '#171a20'; c.font='bold 38px '+F; c.textAlign='right';
+    c.fillText(it.v, W-pad, y+rowH/2);
+    y+=rowH;
+  });
+  // footer
+  c.textAlign='left'; y+=56;
+  c.fillStyle='#171a20'; c.font='32px '+F; c.fillText(sig, pad, y);
+  const d=new Date(); const ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+  c.fillStyle='#9a9a9a'; c.font='24px '+F; c.fillText('實際核貸與還款以銀行最終審核為主　'+ds, pad, y+42);
+  // export → 手機分享 / 電腦下載
+  cv.toBlob(function(blob){
+    const file = new File([blob], '車貸試算.png', {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file]}).catch(function(){});
+    } else {
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      a.download='車貸試算.png'; document.body.appendChild(a); a.click(); a.remove();
+    }
+  }, 'image/png');
+}
+// ---------- 使用人浮水印（僅網頁；分享的 PNG 是另外畫的，不會帶到）----------
+function wmUrl(text){
+  var t=(text||'').trim()||'請設定署名';
+  var svg="<svg xmlns='http://www.w3.org/2000/svg' width='300' height='170'>"+
+    "<text x='150' y='95' text-anchor='middle' transform='rotate(-28 150 90)' "+
+    "fill='rgba(90,94,98,0.11)' font-size='21' font-weight='700' "+
+    "font-family='Microsoft JhengHei,PingFang TC,sans-serif'>"+t+"</text></svg>";
+  return "data:image/svg+xml;charset=utf8,"+encodeURIComponent(svg);
+}
+function updateWM(){
+  var el=document.getElementById('wm'); if(!el) return;
+  var nm=(localStorage.getItem('cfg_name')||'').trim();
+  el.style.backgroundImage='url("'+wmUrl(nm)+'")';
+}
+updateWM();
+
+// ---------- 進入前署名閘門（姓名＋電話都填才能用；本機記憶一次）----------
+(function(){
+  var gate=document.getElementById('gate');
+  var gn=document.getElementById('gate_name'), gp=document.getElementById('gate_phone'), ok=document.getElementById('gate_ok');
+  if(!gate||!gn||!gp||!ok) return;
+  function setNameHash(nm){ var h='#'+encodeURIComponent(nm); try{ history.replaceState(null,'',h); }catch(e){ try{ location.hash=nm; }catch(x){} } } // 把名字接在網址後(外流可追)
+  var svName=(localStorage.getItem('cfg_name')||'').trim(), svPhone=(localStorage.getItem('cfg_phone')||'').trim();
+  function phoneOK(v){ return (v||'').replace(/\D/g,'').length>=8; }        // 至少 8 碼數字
+  function valid(){ return gn.value.trim().length>0 && phoneOK(gp.value); }
+  function refresh(){ ok.disabled=!valid(); }
+  if(svName && phoneOK(svPhone)){ setNameHash(svName); gate.style.display='none'; return; }  // 已填過→直接進(URL 帶名字)
+  gn.value=svName; gp.value=svPhone; refresh();
+  gn.addEventListener('input',refresh); gp.addEventListener('input',refresh);
+  ok.addEventListener('click',function(){
+    if(!valid()) return;
+    var nm=gn.value.trim(), ph=gp.value.trim();
+    try{ localStorage.setItem('cfg_name',nm); localStorage.setItem('cfg_phone',ph); }catch(x){}
+    updateWM();
+    setNameHash(nm);                          // URL 後面帶名字，外流可追
+    gate.style.display='none';
+  });
+})();
+document.getElementById('shotBtn').addEventListener('click', shot);
+</script>
+</body>
+</html>
