@@ -60,6 +60,8 @@
   .hint.warn{color:#b45309; opacity:1; font-weight:600}
   .q3warn{font-size:12px; color:#b45309; background:#fff7ed; border:1px solid #fed7aa;
     border-radius:10px; padding:9px 11px; margin:0 0 12px; line-height:1.55}
+  .q4notice{font-size:12.5px; color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe;
+    border-radius:10px; padding:10px 12px; margin:0 0 14px; line-height:1.55; text-align:center}
   .rate-badge{display:inline-block; background:#e6f4ea; color:var(--good); font-weight:700;
     padding:2px 10px; border-radius:20px; font-size:14px}
   .results{background:var(--card); border-radius:var(--radius); overflow:hidden;
@@ -123,13 +125,14 @@
   <button class="tab active" data-p="new">低利車貸</button>
   <button class="tab" data-p="g">一般車貸</button>
   <button class="tab" data-p="loan">玉山信貸</button>
-  <button class="tab" data-p="y47">元大47+1<span class="tq3">Q3</span></button>
-  <button class="tab" data-p="y99">元大低付<span class="tq3">Q3</span></button>
-  <button class="tab" data-p="t99">台新低付<span class="tq3">Q3</span></button>
+  <button class="tab" data-p="y47">元大47+1</button>
+  <button class="tab" data-p="y99">元大低付</button>
+  <button class="tab" data-p="t99">台新低付</button>
   <button class="tab" data-p="used">二手車貸<span class="tq3">Q3</span></button>
 </div>
 
 <main>
+  <p class="q4notice">🗓️ 26Q4 利率自 <b>9/21 起派案</b>適用；9/21 前派案仍為 Q3 利率</p>
   <!-- ===== 新車 (快速計算機) ===== -->
   <section class="page active" id="page-new" data-q="26Q4">
     <div class="card">
@@ -176,7 +179,7 @@
             <option value="normal" selected>一般客戶</option>
             <option value="corp">企業客戶</option>
           </select>
-          <div class="hint warn">⚠️ 企業客戶利率仍為 26Q3（2.08%），Q4 未公布</div>
+          <div class="hint">企業＝特選企業員工及一等親／配偶（員工保證），僅限個人戶</div>
         </div>
       </div>
     </div>
@@ -230,7 +233,7 @@
             <option value="normal" selected>一般客戶</option>
             <option value="corp">企業客戶</option>
           </select>
-          <div class="hint warn">⚠️ 企業客戶利率仍為 26Q3（2.85%），Q4 未公布</div>
+          <div class="hint">企業＝特選企業員工及一等親／配偶（員工保證），僅限個人戶</div>
         </div>
       </div>
     </div>
@@ -319,17 +322,24 @@
           </select>
         </div>
       </div>
+      <div class="field">
+        <label>客戶別</label>
+        <select id="l_cust">
+          <option value="normal" selected>一般客戶</option>
+          <option value="corp">精選企業員工</option>
+        </select>
+        <div class="hint">精選企業＝Tesla 精選企業員工；個人戶、綁約 1 年、還款最長 10 年</div>
+      </div>
     </div>
     <div class="results" id="l_out"></div>
     <p class="foot">實際核貸與還款以銀行最終審核為主</p>
   </section>
 
   <!-- ===== 元大 47+1 ===== -->
-  <section class="page" id="page-y47" data-q="26Q3">
+  <section class="page" id="page-y47" data-q="26Q4">
     <div class="card">
-      <h2>元大 26Q3 47+1 方案</h2>
-      <p class="note">前 47 期低月付 ＋ 第 48 期尾款．依車型查表</p>
-      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，車價／頭期／月繳皆為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
+      <h2>元大 26Q4 47+1 方案</h2>
+      <p class="note">前 47 期低月付 ＋ 第 48 期尾款．依車型查表．實質利率 3.3%．不限個人戶或公司戶</p>
       <div class="row2">
         <div class="field"><label>車款</label>
           <select id="y47_model"><option>Model3</option><option>ModelY</option></select></div>
@@ -347,11 +357,10 @@
   </section>
 
   <!-- ===== 元大低首付 9999 ===== -->
-  <section class="page" id="page-y99" data-q="26Q3">
+  <section class="page" id="page-y99" data-q="26Q4">
     <div class="card">
-      <h2>元大 26Q3 低首付 9999 方案</h2>
-      <p class="note">前 24 期月繳 9,999 ＋ 24 期後月繳．依車型查表</p>
-      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，車價／頭期／月繳皆為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
+      <h2>元大 26Q4 前 2 年低月付方案</h2>
+      <p class="note">前 24 期月繳 9,999 ＋ 第 25 期起月繳．依車型查表．利率 3.30%．頭期 20%．不限個人戶或公司戶</p>
       <div class="row2">
         <div class="field"><label>車款</label>
           <select id="y99_model"><option>Model3</option><option>ModelY</option></select></div>
@@ -371,11 +380,10 @@
   </section>
 
   <!-- ===== 台新低首付 9999 ===== -->
-  <section class="page" id="page-t99" data-q="26Q3">
+  <section class="page" id="page-t99" data-q="26Q4">
     <div class="card">
-      <h2>台新 26Q3 低首付 9999 方案</h2>
-      <p class="note">前 12 期月繳 9,999 ＋ 第 13 期起本利攤還．利率 2.98%</p>
-      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，利率 2.98% 為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
+      <h2>台新 26Q4 首年低月付方案</h2>
+      <p class="note">前 12 期月繳 9,999 ＋ 第 13 期起本利攤還．利率 3.30%．可第一年後提前結清</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="t_price" value="2499900">
@@ -389,7 +397,6 @@
         <div class="field">
           <label>貸款期數</label>
           <select id="t_term">
-            <option value="60">60 期</option>
             <option value="72">72 期</option>
             <option value="84" selected>84 期</option>
           </select>
@@ -589,9 +596,10 @@ function calcNew(){
   const n = +document.getElementById('n_term').value;
   const bank = document.getElementById('n_bank').value;
   const cust = document.getElementById('n_cust').value;
-  let rate;
-  if(cust==='corp') rate = 0.0208;              // TODO 26Q4 企業利率待補（目前為舊值）
-  else rate = (bank==='taishin') ? 0.0258 : 0.026;  // 26Q4 先繳利息：台新2.58% / 元大2.60%
+  // 26Q4 先繳利息／車商補貼0利率：一般 元大2.60 台新2.58；特選企業 元大2.55 台新2.48
+  const rate = (cust==='corp')
+    ? ((bank==='taishin') ? 0.0248 : 0.0255)
+    : ((bank==='taishin') ? 0.0258 : 0.026);
   const g = 0.0325;                              // 官網利率
   const res = calcBenjin(P, d, rate, n);
   const save = officialInterest(res.L, g, n) - res.interest;
@@ -606,9 +614,10 @@ function calcGen(){
   const n = +document.getElementById('g_term').value;
   const bank = document.getElementById('g_bank').value;
   const cust = document.getElementById('g_cust').value;
-  let rate;
-  if(cust==='corp') rate = 0.0285;                       // TODO 26Q4 企業利率待補（目前為舊值）
-  else rate = 0.0318;                                    // 26Q4 本利攤還：元大／台新同為 3.18%
+  // 26Q4 本利攤還：一般 元大／台新同 3.18；特選企業 元大3.08 台新3.05
+  const rate = (cust==='corp')
+    ? ((bank==='taishin') ? 0.0305 : 0.0308)
+    : 0.0318;
   const g = 0.0325;                                      // 官網利率
   const res = calcBenli(P, d, rate, n);                  // 本利攤還（年金法）
   const save = officialInterest(res.L, g, n) - res.interest;
@@ -636,7 +645,9 @@ function calcLoan(){
   const P = +document.getElementById('l_price').value || 0;
   const d = +document.getElementById('l_down').value;
   const n = +document.getElementById('l_term').value;
-  const rate = 0.028;                                       // 26Q4 玉山本利攤還 2.80%
+  const cust = document.getElementById('l_cust').value;
+  // 26Q4 玉山本利攤還：一般 2.80%／精選企業 2.60%
+  const rate = (cust==='corp') ? 0.026 : 0.028;
   const g = 0.0325;                                         // 原始利率(官網比較)
   const res = calcBenli(P, d, rate, n);
   const save = officialInterest(res.L, g, n) - res.interest;
@@ -647,34 +658,58 @@ function calcLoan(){
 
 // ---------- 查表型方案（元大47+1 / 元大低首付）----------
 // 元大47+1: [車款,版本,軟體,車價,頭期,貸款,成數,前47期,第48期]
+// 26Q4（來源：26Q4 元大銀行47+1期專案試算表_20260908.pdf；實質利率 3.3%）
+// 車價／頭期／貸款／成數與 26Q3 相同，僅前47期月付與第48期尾款調升
 const DATA_Y47 = [
-  ["Model3","LR","AP",1749900,269900,1480000,0.846,15900,874539],
-  ["Model3","LR","EAP",1860900,280900,1580000,0.849,17040,930350],
-  ["Model3","LR","FSD",1971900,301900,1670000,0.847,17970,985374],
-  ["Model3","P","AP",2337900,357900,1980000,0.847,21300,1168575],
-  ["Model3","P","EAP",2448900,368900,2080000,0.849,22440,1224386],
-  ["Model3","P","FSD",2559900,389900,2170000,0.848,23370,1279409],
-  ["ModelY","SR","AP",1899900,279900,1620000,0.853,17560,949479],
-  ["ModelY","SR","EAP",2010900,310900,1700000,0.845,18250,1005213],
-  ["ModelY","SR","FSD",2121900,321900,1800000,0.848,19400,1060525],
-  ["ModelY","LR","AP",2299900,349900,1950000,0.848,21000,1149734],
-  ["ModelY","LR","EAP",2410900,360900,2050000,0.85,22150,1205046],
-  ["ModelY","LR","FSD",2521900,371900,2150000,0.853,23290,1260857],
-  ["ModelY","P","AP",2499900,379900,2120000,0.848,22840,1249507],
-  ["ModelY","P","EAP",2610900,390900,2220000,0.85,23980,1305318],
-  ["ModelY","P","FSD",2721900,411900,2310000,0.849,24900,1360841]];
+  ["Model3","LR","AP",1749900,269900,1480000,0.846,16200,874785],
+  ["Model3","LR","EAP",1860900,280900,1580000,0.849,17370,930104],
+  ["Model3","LR","FSD",1971900,301900,1670000,0.847,18310,985567],
+  ["Model3","P","AP",2337900,357900,1980000,0.847,21710,1168460],
+  ["Model3","P","EAP",2448900,368900,2080000,0.849,22870,1224281],
+  ["Model3","P","FSD",2559900,389900,2170000,0.848,23810,1279745],
+  ["ModelY","SR","AP",1899900,279900,1620000,0.853,17890,949619],
+  ["ModelY","SR","EAP",2010900,310900,1700000,0.845,18600,1005228],
+  ["ModelY","SR","FSD",2121900,321900,1800000,0.848,19770,1060546],
+  ["ModelY","LR","AP",2299900,349900,1950000,0.848,21400,1149804],
+  ["ModelY","LR","EAP",2410900,360900,2050000,0.85,22570,1205123],
+  ["ModelY","LR","FSD",2521900,371900,2150000,0.853,23730,1260945],
+  ["ModelY","P","AP",2499900,379900,2120000,0.848,23270,1249825],
+  ["ModelY","P","EAP",2610900,390900,2220000,0.85,24440,1305144],
+  ["ModelY","P","FSD",2721900,411900,2310000,0.849,25380,1360608]];
 // 元大低首付: [期數,車款,版本,軟體,車價,頭期,貸款,成數,24期後月繳]（前24期固定9999）
+// 26Q4（來源：26Q4 元大銀行 3Y 前2年月付9999_0908.xlsx，客戶利率 3.3%、頭期 20%）
+// 由 perl 直接從 xlsx 四張分頁產生（M3-72/M3-84/MY-72/MY-84），未手抄
 const DATA_Y99 = [
-  [72,"Model3","LR","AP",1749900,349980,1399920,0.8,27410],[72,"Model3","LR","EAP",1860900,372180,1488720,0.8,29495],[72,"Model3","LR","FSD",1971900,394380,1577520,0.8,31580],
-  [72,"Model3","P","AP",2337900,467580,1870320,0.8,38456],[72,"Model3","P","EAP",2448900,489780,1959120,0.8,40541],[72,"Model3","P","FSD",2559900,511980,2047920,0.8,42626],
-  [84,"Model3","LR","AP",1749900,349980,1399920,0.8,22249],[84,"Model3","LR","EAP",1860900,372180,1488720,0.8,23942],[84,"Model3","LR","FSD",1971900,394380,1577520,0.8,25634],
-  [84,"Model3","P","AP",2337900,467580,1870320,0.8,31216],[84,"Model3","P","EAP",2448900,489780,1959120,0.8,32908],[84,"Model3","P","FSD",2559900,511980,2047920,0.8,34601],
-  [72,"ModelY","SR","AP",1899900,379980,1519920,0.8,30228],[72,"ModelY","SR","EAP",2010900,402180,1608720,0.8,32313],[72,"ModelY","SR","FSD",2121900,424380,1697520,0.8,34398],
-  [72,"ModelY","LR","AP",2299900,459980,1839920,0.8,37742],[72,"ModelY","LR","EAP",2410900,482180,1928720,0.8,39827],[72,"ModelY","LR","FSD",2521900,504380,2017520,0.8,41912],
-  [72,"ModelY","P","AP",2499900,499980,1999920,0.8,41499],[72,"ModelY","P","EAP",2610900,522180,2088720,0.8,43584],[72,"ModelY","P","FSD",2721900,544380,2177520,0.8,45670],
-  [84,"ModelY","SR","AP",1899900,379980,1519920,0.8,24536],[84,"ModelY","SR","EAP",2010900,402180,1608720,0.8,26229],[84,"ModelY","SR","FSD",2121900,424380,1697520,0.8,27922],
-  [84,"ModelY","LR","AP",2299900,459980,1839920,0.8,30636],[84,"ModelY","LR","EAP",2410900,482180,1928720,0.8,32329],[84,"ModelY","LR","FSD",2521900,504380,2017520,0.8,34021],
-  [84,"ModelY","P","AP",2499900,499980,1999920,0.8,33686],[84,"ModelY","P","EAP",2610900,522180,2088720,0.8,35379],[84,"ModelY","P","FSD",2721900,544380,2177520,0.8,37071]];
+  [72,"Model3","LR","AP",1749900,349980,1399920,0.8,27782],
+  [72,"Model3","LR","EAP",1860900,372180,1488720,0.8,29894],
+  [72,"Model3","LR","FSD",1971900,394380,1577520,0.8,32006],
+  [72,"Model3","P","AP",2337900,467580,1870320,0.8,38970],
+  [72,"Model3","P","EAP",2448900,489780,1959120,0.8,41083],
+  [72,"Model3","P","FSD",2559900,511980,2047920,0.8,43195],
+  [84,"Model3","LR","AP",1749900,349980,1399920,0.8,22585],
+  [84,"Model3","LR","EAP",1860900,372180,1488720,0.8,24303],
+  [84,"Model3","LR","FSD",1971900,394380,1577520,0.8,26020],
+  [84,"Model3","P","AP",2337900,467580,1870320,0.8,31681],
+  [84,"Model3","P","EAP",2448900,489780,1959120,0.8,33398],
+  [84,"Model3","P","FSD",2559900,511980,2047920,0.8,35116],
+  [72,"ModelY","SR","AP",1899900,379980,1519920,0.8,30636],
+  [72,"ModelY","SR","EAP",2010900,402180,1608720,0.8,32748],
+  [72,"ModelY","SR","FSD",2121900,424380,1697520,0.8,34860],
+  [72,"ModelY","LR","AP",2299900,459980,1839920,0.8,38247],
+  [72,"ModelY","LR","EAP",2410900,482180,1928720,0.8,40359],
+  [72,"ModelY","LR","FSD",2521900,504380,2017520,0.8,42472],
+  [72,"ModelY","P","AP",2499900,499980,1999920,0.8,42053],
+  [72,"ModelY","P","EAP",2610900,522180,2088720,0.8,44165],
+  [72,"ModelY","P","FSD",2721900,544380,2177520,0.8,46277],
+  [84,"ModelY","SR","AP",1899900,379980,1519920,0.8,24906],
+  [84,"ModelY","SR","EAP",2010900,402180,1608720,0.8,26623],
+  [84,"ModelY","SR","FSD",2121900,424380,1697520,0.8,28340],
+  [84,"ModelY","LR","AP",2299900,459980,1839920,0.8,31094],
+  [84,"ModelY","LR","EAP",2410900,482180,1928720,0.8,32811],
+  [84,"ModelY","LR","FSD",2521900,504380,2017520,0.8,34528],
+  [84,"ModelY","P","AP",2499900,499980,1999920,0.8,34187],
+  [84,"ModelY","P","EAP",2610900,522180,2088720,0.8,35905],
+  [84,"ModelY","P","FSD",2721900,544380,2177520,0.8,37622]];
 const VERSIONS = {Model3:["LR","P"], ModelY:["SR","LR","P"]};
 
 function fillVersions(modelSel, verSel){
@@ -724,7 +759,7 @@ function calcT99(){
   let D = +document.getElementById('t_down').value || 0;
   if(D < 99999) D = 99999;                       // 頭款最低 99,999
   const n = +document.getElementById('t_term').value;
-  const r = 0.0298/12;                            // 台新低首付固定年利率 2.98%
+  const r = 0.033/12;                             // 26Q4 台新首年低月付固定年利率 3.30%
   const L = P - D;                                // 初貸金額
   let b = L; for(let i=0;i<12;i++){ b = b*(1+r) - 9999; } // 第13期餘額（月複利估算）
   const pw = Math.pow(1+r, n-12);
@@ -758,7 +793,7 @@ document.getElementById('tabs').addEventListener('click', e=>{
   document.getElementById(id).addEventListener('input', calcUsed);
   document.getElementById(id).addEventListener('change', calcUsed);
 });
-['l_price','l_down','l_term'].forEach(id=>{
+['l_price','l_down','l_term','l_cust'].forEach(id=>{
   document.getElementById(id).addEventListener('input', calcLoan);
   document.getElementById(id).addEventListener('change', calcLoan);
 });
