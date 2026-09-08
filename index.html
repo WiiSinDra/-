@@ -131,7 +131,7 @@
 
 <main>
   <!-- ===== 新車 (快速計算機) ===== -->
-  <section class="page active" id="page-new">
+  <section class="page active" id="page-new" data-q="26Q4">
     <div class="card">
       <h2>長期持有方案</h2>
       <p class="note">Tesla 官方車貸．先繳利息／本金分攤（利息預收於頭期）</p>
@@ -185,7 +185,7 @@
   </section>
 
   <!-- ===== 一般車貸 (本利均攤，同信貸算法) ===== -->
-  <section class="page" id="page-g">
+  <section class="page" id="page-g" data-q="26Q4">
     <div class="card">
       <h2>一般車貸方案</h2>
       <p class="note">一般車貸．本利攤還（利息平均攤入月付）</p>
@@ -239,7 +239,7 @@
   </section>
 
   <!-- ===== 二手 ===== -->
-  <section class="page" id="page-used">
+  <section class="page" id="page-used" data-q="26Q3">
     <div class="card">
       <h2>二手車貸專案</h2>
       <p class="note">中古車貸．先繳利息／本金分攤（利息預收於頭期）</p>
@@ -283,7 +283,7 @@
   </section>
 
   <!-- ===== 玉山信貸 ===== -->
-  <section class="page" id="page-loan">
+  <section class="page" id="page-loan" data-q="26Q4">
     <div class="card">
       <h2>玉山合作信貸方案</h2>
       <p class="note">個人信貸．本利攤還（利息平均攤入月付）</p>
@@ -325,7 +325,7 @@
   </section>
 
   <!-- ===== 元大 47+1 ===== -->
-  <section class="page" id="page-y47">
+  <section class="page" id="page-y47" data-q="26Q3">
     <div class="card">
       <h2>元大 26Q3 47+1 方案</h2>
       <p class="note">前 47 期低月付 ＋ 第 48 期尾款．依車型查表</p>
@@ -347,7 +347,7 @@
   </section>
 
   <!-- ===== 元大低首付 9999 ===== -->
-  <section class="page" id="page-y99">
+  <section class="page" id="page-y99" data-q="26Q3">
     <div class="card">
       <h2>元大 26Q3 低首付 9999 方案</h2>
       <p class="note">前 24 期月繳 9,999 ＋ 24 期後月繳．依車型查表</p>
@@ -371,7 +371,7 @@
   </section>
 
   <!-- ===== 台新低首付 9999 ===== -->
-  <section class="page" id="page-t99">
+  <section class="page" id="page-t99" data-q="26Q3">
     <div class="card">
       <h2>台新 26Q3 低首付 9999 方案</h2>
       <p class="note">前 12 期月繳 9,999 ＋ 第 13 期起本利攤還．利率 2.98%</p>
@@ -825,7 +825,8 @@ function shot(){
     return {k:it.querySelector('.k').textContent.trim(), v:it.querySelector('.v').textContent.trim(),
             save:it.classList.contains('save')};
   });
-  const W=820, pad=52, rowH=104, headH=160, heroH=270, footH=150;
+  const W=820, pad=52, rowH=104, headH=160, heroH=270, footH=200;
+  const qtr = page.dataset.q || '26Q4';   // 該分頁適用季別（Q3 舊方案頁不會誤標成 Q4）
   const condTop=52, condRow=72, condBot=20;
   const condH = inputs.length ? (condTop + inputs.length*condRow + condBot) : 0;
   const H = headH + condH + heroH + items.length*rowH + footH;
@@ -863,8 +864,10 @@ function shot(){
   });
   c.textAlign='left'; y+=56;
   c.fillStyle='#171a20'; c.font='32px '+F; c.fillText(sig, pad, y);
+  c.fillStyle='#b45309'; c.font='bold 26px '+F;
+  c.fillText('※ '+qtr+' 利率僅限當季度交付', pad, y+44);
   const d=new Date(); const ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
-  c.fillStyle='#9a9a9a'; c.font='24px '+F; c.fillText('實際核貸與還款以銀行最終審核為主　'+ds, pad, y+42);
+  c.fillStyle='#9a9a9a'; c.font='24px '+F; c.fillText('實際核貸與還款以銀行最終審核為主　'+ds, pad, y+86);
   try {
     _lastShareDataUrl = cv.toDataURL('image/png');
     _lastShareName = '26Q4車貸試算_' + title.replace(/[\\/:*?"<>|]/g,'') + '.png';
