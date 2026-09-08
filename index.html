@@ -6,9 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="車貸試算">
+<meta name="apple-mobile-web-app-title" content="26Q4車貸試算">
 <meta name="theme-color" content="#171a20">
-<title>26Q3 車貸試算</title>
+<title>26Q4車貸試算</title>
 <style>
   :root{
     --bg:#f2f3f5; --card:#fff; --ink:#171a20; --sub:#5c5e62;
@@ -27,13 +27,18 @@
     padding-top:calc(14px + env(safe-area-inset-top)); position:sticky; top:0; z-index:10;
   }
   header h1{margin:0; font-size:18px; font-weight:700; letter-spacing:1px}
-  header .sub{font-size:12px; opacity:.7; margin-top:2px}
+  header .sub{font-size:12px; opacity:.7; margin-top:6px}
+  .advisor-bar{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .advisor-bar label{flex:0 0 auto;font-size:13px;font-weight:600;opacity:.9}
+  .advisor-bar input{flex:1;min-width:0;padding:8px 12px;border:none;border-radius:8px;font-size:15px;font-family:inherit;color:var(--ink)}
   .tabs{display:flex; gap:6px; padding:10px 12px 0; background:var(--accent2); overflow-x:auto}
   .tab{
     flex:0 0 auto; padding:9px 16px; border:none; border-radius:10px 10px 0 0;
     background:#2b2f36; color:#c9ccd1; font-size:15px; font-weight:600; font-family:inherit;
   }
   .tab.active{background:var(--bg); color:var(--ink)}
+  .tab .tq3{display:inline-block; margin-left:5px; font-size:10px; font-weight:700;
+    background:#b45309; color:#fff; border-radius:6px; padding:1px 4px; vertical-align:1px}
   main{padding:14px 12px}
   .card{background:var(--card); border-radius:var(--radius); padding:16px; margin-bottom:14px;
     box-shadow:0 1px 3px rgba(0,0,0,.06)}
@@ -51,6 +56,10 @@
     background-repeat:no-repeat; background-position:right 14px center; padding-right:34px}
   .row2{display:flex; gap:10px}
   .row2 .field{flex:1}
+  .hint{font-size:11px; color:var(--sub); margin-top:5px; opacity:.85}
+  .hint.warn{color:#b45309; opacity:1; font-weight:600}
+  .q3warn{font-size:12px; color:#b45309; background:#fff7ed; border:1px solid #fed7aa;
+    border-radius:10px; padding:9px 11px; margin:0 0 12px; line-height:1.55}
   .rate-badge{display:inline-block; background:#e6f4ea; color:var(--good); font-weight:700;
     padding:2px 10px; border-radius:20px; font-size:14px}
   .results{background:var(--card); border-radius:var(--radius); overflow:hidden;
@@ -73,48 +82,51 @@
   .shotbtn{width:100%; padding:15px; font-size:17px; font-weight:700; font-family:inherit;
     color:#fff; background:var(--accent); border:none; border-radius:12px; box-shadow:0 2px 6px rgba(204,0,0,.25)}
   .shotbtn:active{opacity:.85}
-  /* 保密提醒條（僅網頁；分享的 PNG 另外畫、不會帶到） */
-  .notice{background:#fdecea; color:#b3261e; font-size:12.5px; font-weight:700;
-    text-align:center; padding:9px 14px; line-height:1.45; letter-spacing:.3px;
-    border-bottom:1px solid #f5c6cb}
-  /* 使用人浮水印層（fixed 蓋滿視窗、不擋操作；不進分享圖） */
-  #wm{position:fixed; inset:0; z-index:60; pointer-events:none; background-repeat:repeat}
-  /* 進入前署名閘門（未填完不能用計算機） */
-  #gate{position:fixed; inset:0; z-index:200; background:rgba(23,26,32,.94);
-    display:flex; align-items:center; justify-content:center; padding:24px}
-  #gate .box{background:#fff; border-radius:16px; padding:22px 20px; width:100%; max-width:380px;
-    box-shadow:0 8px 30px rgba(0,0,0,.35)}
-  #gate h3{margin:0 0 6px; font-size:18px}
-  #gate .gnote{color:var(--sub); font-size:13px; margin:0 0 16px; line-height:1.55}
-  #gate .gbtn{width:100%; padding:14px; font-size:17px; font-weight:700; font-family:inherit;
-    color:#fff; background:var(--accent2); border:none; border-radius:12px; margin-top:8px}
-  #gate .gbtn:disabled{background:#c7c9cd}
+  .share-panel{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);
+    display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom)}
+  .share-panel[hidden]{display:none!important}
+  .share-box{background:#fff;border-radius:18px 18px 0 0;width:100%;max-width:540px;
+    max-height:92vh;overflow:auto;padding:16px 16px 22px;box-shadow:0 -4px 24px rgba(0,0,0,.2)}
+  .share-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .share-hd strong{font-size:17px}
+  .share-x{border:none;background:#f2f3f5;width:36px;height:36px;border-radius:50%;font-size:18px}
+  .share-tip{font-size:13px;color:var(--sub);margin:0 0 12px;line-height:1.55;text-align:center}
+  .share-tip strong{color:var(--accent2)}
+  .share-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .share-act{flex:1;min-width:96px;padding:12px 10px;border:none;border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;background:#171a20;color:#fff}
+  .share-act.secondary{background:#f2f3f5;color:var(--ink)}
+  .share-act:active{opacity:.85}
+  .share-status{min-height:20px;font-size:13px;color:var(--good);text-align:center;margin:-4px 0 10px}
+  .share-status.err{color:var(--accent)}
+  .share-warn{font-size:12px;color:#b45309;background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px 12px;margin:0 0 12px;line-height:1.5}
+  .share-imgwrap{border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:#fafafa;margin-bottom:14px;-webkit-touch-callout:default}
+  .share-imgwrap img{display:block;width:100%;height:auto;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;touch-action:manipulation;pointer-events:auto}
+  .share-full{position:fixed;inset:0;z-index:600;background:#000;display:flex;flex-direction:column}
+  .share-full[hidden]{display:none!important}
+  .share-full-bar{color:#fff;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));
+    display:flex;gap:10px;justify-content:space-between;align-items:center;background:#171a20;font-size:14px;line-height:1.45}
+  .share-full-bar button{border:none;background:#fff;color:#171a20;font-weight:700;border-radius:999px;padding:8px 14px;font-size:14px;font-family:inherit;flex:0 0 auto}
+  .share-full-body{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:center;padding:10px 8px 24px}
+  .share-full-body img{max-width:100%;width:100%;height:auto;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}
 </style>
 </head>
 <body>
-<div id="wm"></div>
-<div id="gate">
-  <div class="box">
-    <h3>請先署名再使用</h3>
-    <p class="gnote">請填寫你的姓名與電話（僅存在本機、設定一次即可）。此姓名會作為網頁浮水印，用於防止外流追溯。</p>
-    <div class="field"><label>業務姓名</label><input id="gate_name" placeholder="你的姓名"></div>
-    <div class="field"><label>聯絡電話</label><input id="gate_phone" inputmode="tel" placeholder="09xx-xxxxxx"></div>
-    <button id="gate_ok" class="gbtn" disabled>開始使用</button>
-  </div>
-</div>
-<div class="notice">🔒 本網址請勿外流，僅許可分享圖片給客戶</div>
 <header>
-  <h1>26Q3 車貸試算</h1>
-  <div class="sub">Tesla Felis · 手機版</div>
+  <h1>26Q4車貸試算</h1>
+  <div class="advisor-bar">
+    <label for="advisorInput">業務姓名</label>
+    <input id="advisorInput" type="text" placeholder="自動帶入或手動填寫" autocomplete="name">
+  </div>
+  <div class="sub" id="advisorSub">長按報價圖分享客戶</div>
 </header>
 <div class="tabs" id="tabs">
   <button class="tab active" data-p="new">低利車貸</button>
   <button class="tab" data-p="g">一般車貸</button>
   <button class="tab" data-p="loan">玉山信貸</button>
-  <button class="tab" data-p="y47">元大47+1</button>
-  <button class="tab" data-p="y99">元大低付</button>
-  <button class="tab" data-p="t99">台新低付</button>
-  <button class="tab" data-p="used">二手車貸</button>
+  <button class="tab" data-p="y47">元大47+1<span class="tq3">Q3</span></button>
+  <button class="tab" data-p="y99">元大低付<span class="tq3">Q3</span></button>
+  <button class="tab" data-p="t99">台新低付<span class="tq3">Q3</span></button>
+  <button class="tab" data-p="used">二手車貸<span class="tq3">Q3</span></button>
 </div>
 
 <main>
@@ -122,10 +134,11 @@
   <section class="page active" id="page-new">
     <div class="card">
       <h2>長期持有方案</h2>
-      <p class="note">Tesla 官方車貸．本金分攤（利息預收於頭期）</p>
+      <p class="note">Tesla 官方車貸．先繳利息／本金分攤（利息預收於頭期）</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="n_price" value="1749900">
+        <div class="hint">🔗 四個新車方案車價連動（二手車貸獨立）</div>
       </div>
       <div class="row2">
         <div class="field">
@@ -163,6 +176,7 @@
             <option value="normal" selected>一般客戶</option>
             <option value="corp">企業客戶</option>
           </select>
+          <div class="hint warn">⚠️ 企業客戶利率仍為 26Q3（2.08%），Q4 未公布</div>
         </div>
       </div>
     </div>
@@ -174,10 +188,11 @@
   <section class="page" id="page-g">
     <div class="card">
       <h2>一般車貸方案</h2>
-      <p class="note">一般車貸．本利均攤（利息平均攤入月付）</p>
+      <p class="note">一般車貸．本利攤還（利息平均攤入月付）</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="g_price" value="1749900">
+        <div class="hint">🔗 四個新車方案車價連動（二手車貸獨立）</div>
       </div>
       <div class="row2">
         <div class="field">
@@ -215,6 +230,7 @@
             <option value="normal" selected>一般客戶</option>
             <option value="corp">企業客戶</option>
           </select>
+          <div class="hint warn">⚠️ 企業客戶利率仍為 26Q3（2.85%），Q4 未公布</div>
         </div>
       </div>
     </div>
@@ -226,7 +242,8 @@
   <section class="page" id="page-used">
     <div class="card">
       <h2>二手車貸專案</h2>
-      <p class="note">中古車貸．本金分攤（利息預收於頭期）</p>
+      <p class="note">中古車貸．先繳利息／本金分攤（利息預收於頭期）</p>
+      <p class="q3warn">⚠️ 此頁利率仍為 <b>26Q3 方案</b>（元大 2.65%／台新 2.90%）。26Q4 二手方案尚未公布，數字僅供參考。</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="u_price" value="1541000">
@@ -269,10 +286,11 @@
   <section class="page" id="page-loan">
     <div class="card">
       <h2>玉山合作信貸方案</h2>
-      <p class="note">個人信貸．本利均攤（利息平均攤入月付）</p>
+      <p class="note">個人信貸．本利攤還（利息平均攤入月付）</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="l_price" value="1749900">
+        <div class="hint">🔗 四個新車方案車價連動（二手車貸獨立）</div>
       </div>
       <div class="row2">
         <div class="field">
@@ -301,13 +319,6 @@
           </select>
         </div>
       </div>
-      <div class="field">
-        <label>優惠利率</label>
-        <select id="l_rate">
-          <option value="0.024">2.40%</option>
-          <option value="0.025" selected>2.50%</option>
-        </select>
-      </div>
     </div>
     <div class="results" id="l_out"></div>
     <p class="foot">實際核貸與還款以銀行最終審核為主</p>
@@ -318,6 +329,7 @@
     <div class="card">
       <h2>元大 26Q3 47+1 方案</h2>
       <p class="note">前 47 期低月付 ＋ 第 48 期尾款．依車型查表</p>
+      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，車價／頭期／月繳皆為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
       <div class="row2">
         <div class="field"><label>車款</label>
           <select id="y47_model"><option>Model3</option><option>ModelY</option></select></div>
@@ -339,6 +351,7 @@
     <div class="card">
       <h2>元大 26Q3 低首付 9999 方案</h2>
       <p class="note">前 24 期月繳 9,999 ＋ 24 期後月繳．依車型查表</p>
+      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，車價／頭期／月繳皆為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
       <div class="row2">
         <div class="field"><label>車款</label>
           <select id="y99_model"><option>Model3</option><option>ModelY</option></select></div>
@@ -362,9 +375,11 @@
     <div class="card">
       <h2>台新 26Q3 低首付 9999 方案</h2>
       <p class="note">前 12 期月繳 9,999 ＋ 第 13 期起本利攤還．利率 2.98%</p>
+      <p class="q3warn">⚠️ 此為 <b>26Q3 方案</b>，利率 2.98% 為 Q3 數字。26Q4 方案尚未公布，公布後才會更新。</p>
       <div class="field">
         <label>車款總價（元）</label>
         <input type="number" inputmode="numeric" id="t_price" value="2499900">
+        <div class="hint">🔗 四個新車方案車價連動（二手車貸獨立）</div>
       </div>
       <div class="row2">
         <div class="field">
@@ -387,11 +402,145 @@
 </main>
 
 <div class="shotwrap">
-  <button id="shotBtn" class="shotbtn">📷 存成圖片 · 傳給客戶</button>
+  <button id="shotBtn" type="button" class="shotbtn">📷 產生客戶報價圖</button>
+</div>
+
+<div id="sharePanel" class="share-panel" hidden>
+  <div class="share-box">
+    <div class="share-hd">
+      <strong>客戶報價圖</strong>
+      <button type="button" id="shareClose" class="share-x" aria-label="關閉">✕</button>
+    </div>
+    <p class="share-tip"><strong>長按圖片</strong> → 拷貝／加入照片　｜　或點 <strong>全螢幕</strong> 再長按</p>
+    <p id="shareWarn" class="share-warn" hidden></p>
+    <div class="share-actions">
+      <button type="button" id="shareFullBtn" class="share-act">🖼 全螢幕（長按存圖）</button>
+    </div>
+    <p id="shareStatus" class="share-status" aria-live="polite"></p>
+    <div class="share-imgwrap">
+      <img id="shareImg" alt="26Q4車貸試算 報價" draggable="true">
+    </div>
+  </div>
+</div>
+
+<div id="shareFull" class="share-full" hidden>
+  <div class="share-full-bar">
+    <span id="shareFullHint">長按圖片 → 拷貝／加入照片</span>
+    <button type="button" id="shareFullClose">完成</button>
+  </div>
+  <div class="share-full-body">
+    <img id="shareFullImg" alt="26Q4車貸試算 報價">
+  </div>
 </div>
 
 <script>
-// ---------- 計算引擎（對應 Excel「基本資料」sheet3，已驗證到元一致）----------
+// 業務姓名：SharePoint API 常被擋 → URL / PageContext / session / 手動填
+var _advisorName = '';
+var _ADV_KEY = 'loan_advisor';
+function memGet(k){ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }
+function memSet(k,v){ try{ if(v) sessionStorage.setItem(k,v); }catch(e){} }
+function advisorSig(){
+  var n = (_advisorName || '').trim();
+  return n ? ('Tesla 業務 ' + n) : 'Tesla';
+}
+function setAdvisorName(n, save){
+  n = (n || '').trim();
+  if(!n) return false;
+  _advisorName = n;
+  var inp = document.getElementById('advisorInput');
+  if(inp && inp.value !== n) inp.value = n;
+  updateAdvisorUi();
+  if(save !== false) memSet(_ADV_KEY, n);
+  return true;
+}
+function updateAdvisorUi(){
+  var el = document.getElementById('advisorSub');
+  if(!el) return;
+  var n = (_advisorName || '').trim();
+  el.textContent = n ? ('業務 ' + n + ' · 長按報價圖分享客戶') : '請填業務姓名 · 長按報價圖分享客戶';
+}
+function nameFromUrl(){
+  try {
+    var q = new URLSearchParams(location.search || '');
+    return (q.get('advisor') || q.get('n') || q.get('name') || '').trim();
+  } catch(e){ return ''; }
+}
+function tryPageContext(){
+  var list = [window];
+  try { if(window.parent && window.parent !== window) list.push(window.parent); } catch(e){}
+  try { if(window.top) list.push(window.top); } catch(e){}
+  for(var i=0;i<list.length;i++){
+    try {
+      var pc = list[i]._spPageContextInfo;
+      if(pc && pc.userDisplayName) return String(pc.userDisplayName).trim();
+    } catch(e){}
+  }
+  return '';
+}
+function spSiteRoots(){
+  var path = location.pathname || '';
+  var roots = [];
+  var pm = path.match(/^(\/personal\/[^/]+)/i);
+  if(pm) roots.push(pm[1]);
+  var sm = path.match(/^(\/sites\/[^/]+)/i);
+  if(sm) roots.push(sm[1]);
+  roots.push('');
+  return roots;
+}
+function spGet(url){
+  return fetch(url, {
+    credentials: 'same-origin',
+    headers: { 'Accept': 'application/json;odata=nometadata' }
+  }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+}
+function nameFromProfile(j){
+  if(!j) return '';
+  if(j.d) j = j.d;
+  if(j.DisplayName) return String(j.DisplayName).trim();
+  if(j.PreferredName) return String(j.PreferredName).trim();
+  if(j.Title) return String(j.Title).trim();
+  return '';
+}
+function trySpApi(){
+  if(!/sharepoint\.com/i.test(location.hostname || '')) return Promise.resolve(false);
+  var roots = spSiteRoots();
+  var idx = 0;
+  function nextUser(){
+    if(idx >= roots.length) return nextProfile(0);
+    var base = roots[idx++];
+    return spGet(base + '/_api/web/currentuser').then(function(j){
+      if(j && setAdvisorName(j.Title, true)) return true;
+      return nextUser();
+    });
+  }
+  function nextProfile(i){
+    if(i >= roots.length) return false;
+    return spGet(roots[i] + '/_api/SP.UserProfiles.PeopleManager/GetMyProperties').then(function(j){
+      if(j && setAdvisorName(nameFromProfile(j), true)) return true;
+      return nextProfile(i + 1);
+    });
+  }
+  return Promise.resolve().then(nextUser);
+}
+function loadAdvisorName(){
+  var fromUrl = nameFromUrl();
+  if(fromUrl && setAdvisorName(fromUrl, true)) return;
+  var saved = memGet(_ADV_KEY);
+  if(saved && setAdvisorName(saved, false)) return;
+  var ctx = tryPageContext();
+  if(ctx && setAdvisorName(ctx, true)) return;
+  trySpApi();
+}
+loadAdvisorName();
+(function(){
+  var inp = document.getElementById('advisorInput');
+  if(!inp) return;
+  inp.addEventListener('input', function(){
+    _advisorName = inp.value.trim();
+    memSet(_ADV_KEY, _advisorName);
+    updateAdvisorUi();
+  });
+})();
 // 本金分攤：月付=貸款/期數（純本金），利息預收進頭期款（新車/二手/M3）
 function calcBenjin(P, d, annualRate, n){
   const down = P*d;                    // 自備款
@@ -417,8 +566,10 @@ function officialInterest(L, annualG, n){
 const nf = new Intl.NumberFormat('zh-TW',{maximumFractionDigits:0});
 function money(x){ return 'NT$ ' + nf.format(Math.round(x)); }
 function pct(x){ return (x*100).toFixed(2) + '%'; }
+// 26Q4 開辦費
+const FEE = {yuanta:2000, taishin:3500, esun:3000};
 
-function renderResult(el, {rate, monthly, downTotal, interest, save, saveLabel, downLabel}){
+function renderResult(el, {rate, monthly, downTotal, interest, save, saveLabel, downLabel, fee}){
   el.innerHTML =
     '<div class="r-hero"><div class="lbl">每月月付</div>'+
     '<div class="val">'+nf.format(Math.round(monthly))+' <span class="unit">元 / 月</span></div></div>'+
@@ -426,6 +577,7 @@ function renderResult(el, {rate, monthly, downTotal, interest, save, saveLabel, 
       '<div class="r-item"><span class="k">優惠利率</span><span class="v"><span class="rate-badge">'+pct(rate)+'</span></span></div>'+
       '<div class="r-item"><span class="k">'+(downLabel||'頭期款（含總利息）')+'</span><span class="v">'+money(downTotal)+'</span></div>'+
       '<div class="r-item"><span class="k">貸款總利息</span><span class="v">'+money(interest)+'</span></div>'+
+      (fee ? '<div class="r-item"><span class="k">開辦費</span><span class="v">'+money(fee)+'</span></div>' : '')+
       '<div class="r-item save"><span class="k">'+saveLabel+'</span><span class="v">省 '+money(save)+'</span></div>'+
     '</div>';
 }
@@ -438,14 +590,14 @@ function calcNew(){
   const bank = document.getElementById('n_bank').value;
   const cust = document.getElementById('n_cust').value;
   let rate;
-  if(cust==='corp') rate = 0.0208;              // 企業客戶（不分銀行）
-  else rate = (bank==='taishin') ? 0.0218 : 0.0213; // 一般：台新2.18% / 元大2.13%
-  const g = 0.032;                               // 官網利率
+  if(cust==='corp') rate = 0.0208;              // TODO 26Q4 企業利率待補（目前為舊值）
+  else rate = (bank==='taishin') ? 0.0258 : 0.026;  // 26Q4 先繳利息：台新2.58% / 元大2.60%
+  const g = 0.0325;                              // 官網利率
   const res = calcBenjin(P, d, rate, n);
   const save = officialInterest(res.L, g, n) - res.interest;
   renderResult(document.getElementById('n_out'),
     {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
-     save, saveLabel:'比官網利率('+pct(g)+')省'});
+     save, saveLabel:'比官網利率('+pct(g)+')省', fee:FEE[bank]});
 }
 // ---------- 一般車貸（本利均攤，同信貸算法）----------
 function calcGen(){
@@ -455,14 +607,14 @@ function calcGen(){
   const bank = document.getElementById('g_bank').value;
   const cust = document.getElementById('g_cust').value;
   let rate;
-  if(cust==='corp') rate = 0.0285;                       // 企業客戶（不分銀行）
-  else rate = (bank==='taishin') ? 0.0298 : 0.0293;      // 一般：台新2.98% / 元大2.93%
-  const g = 0.032;                                       // 官網利率
-  const res = calcBenli(P, d, rate, n);                  // 本利均攤（同信貸）
+  if(cust==='corp') rate = 0.0285;                       // TODO 26Q4 企業利率待補（目前為舊值）
+  else rate = 0.0318;                                    // 26Q4 本利攤還：元大／台新同為 3.18%
+  const g = 0.0325;                                      // 官網利率
+  const res = calcBenli(P, d, rate, n);                  // 本利攤還（年金法）
   const save = officialInterest(res.L, g, n) - res.interest;
   renderResult(document.getElementById('g_out'),
     {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
-     save, saveLabel:'比官網利率('+pct(g)+')省', downLabel:'頭期款（自備款）'});
+     save, saveLabel:'比官網利率('+pct(g)+')省', downLabel:'頭期款（自備款）', fee:FEE[bank]});
 }
 // ---------- 二手 ----------
 function calcUsed(){
@@ -476,7 +628,7 @@ function calcUsed(){
   const save = officialInterest(res.L, g, n) - res.interest;
   renderResult(document.getElementById('u_out'),
     {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
-     save, saveLabel:'比原始利率('+pct(g)+')省'});
+     save, saveLabel:'比原始利率('+pct(g)+')省', fee:FEE[bank]});
 }
 
 // ---------- 玉山信貸（本利均攤）----------
@@ -484,13 +636,13 @@ function calcLoan(){
   const P = +document.getElementById('l_price').value || 0;
   const d = +document.getElementById('l_down').value;
   const n = +document.getElementById('l_term').value;
-  const rate = +document.getElementById('l_rate').value;   // 優惠利率 2.4% / 2.5%
-  const g = 0.032;                                          // 原始利率(官網比較)
+  const rate = 0.028;                                       // 26Q4 玉山本利攤還 2.80%
+  const g = 0.0325;                                         // 原始利率(官網比較)
   const res = calcBenli(P, d, rate, n);
   const save = officialInterest(res.L, g, n) - res.interest;
   renderResult(document.getElementById('l_out'),
     {rate, monthly:res.monthly, downTotal:res.downTotal, interest:res.interest,
-     save, saveLabel:'比原始利率('+pct(g)+')省', downLabel:'頭期款（自備款）'});
+     save, saveLabel:'比原始利率('+pct(g)+')省', downLabel:'頭期款（自備款）', fee:FEE.esun});
 }
 
 // ---------- 查表型方案（元大47+1 / 元大低首付）----------
@@ -548,7 +700,8 @@ function calcY47(){
      {k:'車價（含選配）',v:money(price+opt)},
      {k:'頭期款（含選配）',v:money(down+opt)},
      {k:'貸款金額',v:money(loan)},
-     {k:'貸款成數',v:pct(ratio)}]);
+     {k:'貸款成數',v:pct(ratio)},
+     {k:'開辦費',v:money(FEE.yuanta)}]);
 }
 function calcY99(){
   const m=document.getElementById('y99_model').value, v=document.getElementById('y99_ver').value, s=document.getElementById('y99_sw').value;
@@ -561,7 +714,8 @@ function calcY99(){
      {k:'車價（含選配）',v:money(price+opt)},
      {k:'頭期款（含選配）',v:money(down+opt)},
      {k:'貸款金額',v:money(loan)},
-     {k:'貸款成數',v:pct(ratio)}]);
+     {k:'貸款成數',v:pct(ratio)},
+     {k:'開辦費',v:money(FEE.yuanta)}]);
 }
 
 // ---------- 台新低首付 9999（前12期9999，之後本利攤還剩餘餘額）----------
@@ -580,7 +734,8 @@ function calcT99(){
     [{k:'第 13 期起月付（約）',v:money(after)},
      {k:'初貸金額（車價−頭款）',v:money(L)},
      {k:'第 13 期餘額（約）',v:money(b)},
-     {k:'頭款',v:money(D)}]);
+     {k:'頭款',v:money(D)},
+     {k:'開辦費',v:money(FEE.taishin)}]);
 }
 
 // ---------- 分頁切換 ----------
@@ -603,7 +758,7 @@ document.getElementById('tabs').addEventListener('click', e=>{
   document.getElementById(id).addEventListener('input', calcUsed);
   document.getElementById(id).addEventListener('change', calcUsed);
 });
-['l_price','l_down','l_term','l_rate'].forEach(id=>{
+['l_price','l_down','l_term'].forEach(id=>{
   document.getElementById(id).addEventListener('input', calcLoan);
   document.getElementById(id).addEventListener('change', calcLoan);
 });
@@ -620,20 +775,42 @@ y99m.addEventListener('change', ()=>{ fillVersions(y99m,y99v); calcY99(); });
 // 台新低首付
 ['t_price','t_down','t_term'].forEach(id=>{ const e=document.getElementById(id);
   e.addEventListener('input',calcT99); e.addEventListener('change',calcT99); });
+// ---------- 車價連動（新車四方案共用；二手車貸與查表方案不參與）----------
+const PRICE_SYNC = [
+  {id:'n_price', calc:calcNew},
+  {id:'g_price', calc:calcGen},
+  {id:'l_price', calc:calcLoan},
+  {id:'t_price', calc:calcT99}
+];
+function syncPrice(srcId){
+  const v = document.getElementById(srcId).value;
+  PRICE_SYNC.forEach(p=>{
+    if(p.id === srcId) return;
+    const el = document.getElementById(p.id);
+    if(el.value === v) return;          // 已同步就不重算
+    el.value = v;                        // 直接設值＋自行重算，不派送事件（避免互相觸發成無窮迴圈）
+    p.calc();
+  });
+}
+PRICE_SYNC.forEach(p=>{
+  const e = document.getElementById(p.id);
+  e.addEventListener('input', ()=>syncPrice(p.id));
+  e.addEventListener('change', ()=>syncPrice(p.id));
+});
 // 初始化版本下拉 + 首次計算
-fillVersions(y47m,y47v); y47v.value='LR';
-fillVersions(y99m,y99v); y99v.value='SR'; // ModelY 預設 SR
-document.getElementById('y99_model').value='ModelY'; fillVersions(y99m,y99v); y99v.value='SR';
-calcNew(); calcGen(); calcUsed(); calcLoan(); calcY47(); calcY99(); calcT99();
+try {
+  fillVersions(y47m,y47v); y47v.value='LR';
+  fillVersions(y99m,y99v); y99v.value='SR';
+  document.getElementById('y99_model').value='ModelY'; fillVersions(y99m,y99v); y99v.value='SR';
+  calcNew(); calcGen(); calcUsed(); calcLoan(); calcY47(); calcY99(); calcT99();
+} catch(initErr) {}
 
-// ---------- 一鍵存圖 / 分享（畫成報價卡 PNG）----------
 function shot(){
   const page = document.querySelector('.page.active');
   const res = page.querySelector('.results');
   const hero = res && res.querySelector('.r-hero');
   if(!hero){ alert('請先選好方案／輸入金額'); return; }
   const title = page.querySelector('h2').textContent.trim();
-  // 試算條件（把上方輸入欄位一起帶進圖）
   const inputs = [].slice.call(page.querySelectorAll('.card .field')).map(function(f){
     const lab=f.querySelector('label'), el=f.querySelector('select,input');
     if(!lab||!el) return null;
@@ -641,9 +818,7 @@ function shot(){
     else { v=el.value; if(/^\d+$/.test(v)) v=nf.format(+v); }
     return {k:lab.textContent.trim(), v:v};
   }).filter(Boolean);
-  // 自訂署名（存在本機）
-  const nm=(localStorage.getItem('cfg_name')||'').trim(), ph=(localStorage.getItem('cfg_phone')||'').trim();
-  let sig='Tesla'; if(nm) sig='Tesla 業務 '+nm; if(ph) sig+=(nm?'　':' ')+ph;
+  const sig = advisorSig();
   const heroLbl = hero.querySelector('.lbl').textContent.trim();
   const heroVal = hero.querySelector('.val').textContent.replace(/\s+/g,' ').trim();
   const items = [].slice.call(res.querySelectorAll('.r-item')).map(function(it){
@@ -659,12 +834,10 @@ function shot(){
   const c = cv.getContext('2d'); c.scale(s,s);
   const F = '"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif';
   c.fillStyle='#fff'; c.fillRect(0,0,W,H);
-  // header
   c.fillStyle='#171a20'; c.fillRect(0,0,W,headH);
   c.textBaseline='middle'; c.fillStyle='#fff'; c.font='bold 60px '+F; c.fillText(title, pad, 68);
-  c.fillStyle='#9aa0a6'; c.font='26px '+F; c.fillText('26Q3 車貸試算', pad, 116);
+  c.fillStyle='#9aa0a6'; c.font='26px '+F; c.fillText('26Q4車貸試算', pad, 116);
   let y=headH;
-  // 試算條件區
   if(inputs.length){
     c.fillStyle='#fafafa'; c.fillRect(0,y,W,condH);
     c.fillStyle='#9aa0a6'; c.font='24px '+F; c.textBaseline='middle'; c.textAlign='left'; c.fillText('試算條件', pad, y+30);
@@ -676,12 +849,10 @@ function shot(){
     });
     y+=condH;
   }
-  // hero
   c.fillStyle='#f4f5f6'; c.fillRect(0,y,W,heroH);
   c.textAlign='center'; c.fillStyle='#5c5e62'; c.font='34px '+F; c.fillText(heroLbl, W/2, y+80);
   c.fillStyle='#171a20'; c.font='bold 108px '+F; c.fillText(heroVal, W/2, y+185);
   c.textAlign='left'; y+=heroH;
-  // rows
   items.forEach(function(it){
     c.strokeStyle='#e3e5e8'; c.lineWidth=1; c.beginPath(); c.moveTo(pad,y+rowH); c.lineTo(W-pad,y+rowH); c.stroke();
     c.fillStyle='#5c5e62'; c.font='36px '+F; c.textBaseline='middle'; c.textAlign='left';
@@ -690,61 +861,86 @@ function shot(){
     c.fillText(it.v, W-pad, y+rowH/2);
     y+=rowH;
   });
-  // footer
   c.textAlign='left'; y+=56;
   c.fillStyle='#171a20'; c.font='32px '+F; c.fillText(sig, pad, y);
   const d=new Date(); const ds=d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
   c.fillStyle='#9a9a9a'; c.font='24px '+F; c.fillText('實際核貸與還款以銀行最終審核為主　'+ds, pad, y+42);
-  // export → 手機分享 / 電腦下載
-  cv.toBlob(function(blob){
-    const file = new File([blob], '車貸試算.png', {type:'image/png'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({files:[file]}).catch(function(){});
-    } else {
-      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-      a.download='車貸試算.png'; document.body.appendChild(a); a.click(); a.remove();
+  try {
+    _lastShareDataUrl = cv.toDataURL('image/png');
+    _lastShareName = '26Q4車貸試算_' + title.replace(/[\\/:*?"<>|]/g,'') + '.png';
+    document.getElementById('shareImg').src = _lastShareDataUrl;
+    document.getElementById('shareFullImg').src = _lastShareDataUrl;
+    setShareStatus('');
+    updateShareWarn();
+    document.getElementById('sharePanel').hidden = false;
+    document.body.style.overflow = 'hidden';
+    if(shouldPreferFullscreen()){
+      setTimeout(openShareFullscreen, 120);
     }
-  }, 'image/png');
+  } catch(e) {
+    alert('無法產生圖片，請重試');
+  }
 }
-// ---------- 使用人浮水印（僅網頁；分享的 PNG 是另外畫的，不會帶到）----------
-function wmUrl(text){
-  var t=(text||'').trim()||'請設定署名';
-  var svg="<svg xmlns='http://www.w3.org/2000/svg' width='300' height='170'>"+
-    "<text x='150' y='95' text-anchor='middle' transform='rotate(-28 150 90)' "+
-    "fill='rgba(90,94,98,0.11)' font-size='21' font-weight='700' "+
-    "font-family='Microsoft JhengHei,PingFang TC,sans-serif'>"+t+"</text></svg>";
-  return "data:image/svg+xml;charset=utf8,"+encodeURIComponent(svg);
+function closeSharePanel(){
+  document.getElementById('sharePanel').hidden = true;
+  document.body.style.overflow = '';
+  setShareStatus('');
 }
-function updateWM(){
-  var el=document.getElementById('wm'); if(!el) return;
-  var nm=(localStorage.getItem('cfg_name')||'').trim();
-  el.style.backgroundImage='url("'+wmUrl(nm)+'")';
+function closeShareFullscreen(){
+  document.getElementById('shareFull').hidden = true;
+  document.body.style.overflow = '';
 }
-updateWM();
-
-// ---------- 進入前署名閘門（姓名＋電話都填才能用；本機記憶一次）----------
-(function(){
-  var gate=document.getElementById('gate');
-  var gn=document.getElementById('gate_name'), gp=document.getElementById('gate_phone'), ok=document.getElementById('gate_ok');
-  if(!gate||!gn||!gp||!ok) return;
-  function setNameHash(nm){ var h='#'+encodeURIComponent(nm); try{ history.replaceState(null,'',h); }catch(e){ try{ location.hash=nm; }catch(x){} } } // 把名字接在網址後(外流可追)
-  var svName=(localStorage.getItem('cfg_name')||'').trim(), svPhone=(localStorage.getItem('cfg_phone')||'').trim();
-  function phoneOK(v){ return (v||'').replace(/\D/g,'').length>=8; }        // 至少 8 碼數字
-  function valid(){ return gn.value.trim().length>0 && phoneOK(gp.value); }
-  function refresh(){ ok.disabled=!valid(); }
-  if(svName && phoneOK(svPhone)){ setNameHash(svName); gate.style.display='none'; return; }  // 已填過→直接進(URL 帶名字)
-  gn.value=svName; gp.value=svPhone; refresh();
-  gn.addEventListener('input',refresh); gp.addEventListener('input',refresh);
-  ok.addEventListener('click',function(){
-    if(!valid()) return;
-    var nm=gn.value.trim(), ph=gp.value.trim();
-    try{ localStorage.setItem('cfg_name',nm); localStorage.setItem('cfg_phone',ph); }catch(x){}
-    updateWM();
-    setNameHash(nm);                          // URL 後面帶名字，外流可追
-    gate.style.display='none';
-  });
-})();
+document.getElementById('shareClose').addEventListener('click', closeSharePanel);
+document.getElementById('sharePanel').addEventListener('click', function(e){ if(e.target.id==='sharePanel') closeSharePanel(); });
+document.getElementById('shareFullClose').addEventListener('click', closeShareFullscreen);
 document.getElementById('shotBtn').addEventListener('click', shot);
+
+var _lastShareDataUrl = '';
+var _lastShareName = '26Q4車貸試算.png';
+
+function isIOS(){
+  return /iPad|iPhone|iPod/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+function isInIframe(){
+  try { return window.self !== window.top; } catch(e){ return true; }
+}
+function isSharePoint(){
+  return /sharepoint\.com/i.test(location.hostname || '');
+}
+function shouldPreferFullscreen(){
+  return isIOS() || isInIframe() || isSharePoint();
+}
+function updateShareWarn(){
+  var el = document.getElementById('shareWarn');
+  if(!el) return;
+  if(isInIframe()){
+    el.hidden = false;
+    el.textContent = '若在 SharePoint 預覽框內長按無「拷貝」，請改用 web=1 全頁連結開啟。';
+    return;
+  }
+  if(isIOS()){
+    el.hidden = false;
+    el.textContent = 'iPhone 請點「全螢幕」→ 長按圖片 → 拷貝／加入照片。';
+    return;
+  }
+  el.hidden = true;
+}
+function setShareStatus(msg, isErr){
+  var el = document.getElementById('shareStatus');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.classList.toggle('err', !!isErr);
+}
+function openShareFullscreen(){
+  if(!_lastShareDataUrl){ setShareStatus('請先產生報價圖', true); return; }
+  document.getElementById('shareFullImg').src = _lastShareDataUrl;
+  document.getElementById('shareFull').hidden = false;
+  document.body.style.overflow = 'hidden';
+  setShareStatus('');
+}
+document.getElementById('shareFullBtn').addEventListener('click', openShareFullscreen);
+document.getElementById('shareImg').addEventListener('click', openShareFullscreen);
 </script>
 </body>
 </html>
